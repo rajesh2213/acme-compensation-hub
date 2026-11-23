@@ -206,9 +206,9 @@ No `updated_at`. Requirements map: previous/new amount → those columns; curren
 - **Future `effective_date` [A]:** metadata only; current salary updates immediately on submit (no scheduler).
 - **Immutability:** no UPDATE/DELETE API for revisions; corrections = new revision **[C]**.
 
-### Pay period **[U]**
+### Pay period: annual salary only **[C]**
 
-Requirements/architecture do not define annual vs monthly vs other. Annual is a plausible convention but **not** confirmed. No `pay_period` column. Mixed periods would invalidate same-currency aggregates the same way mixed currencies do. Seed/UI should keep amounts internally consistent for demos **[A]** until product decides.
+All salary amounts, salary revisions, and compensation analytics represent **annual** compensation. There is no `pay_period` column; period is an application invariant, not a stored attribute. Monthly, hourly, and other period types, and any conversion between periods, are out of scope for v1.
 
 ---
 
@@ -307,7 +307,7 @@ Fixed RNG seed; synthetic names only (no real PII); `E000001`…`E010000`; mostl
 
 ## 11. Open items
 
-**Still [U]:** pay period; session TTL; CSRF wire details; cookie attributes; password-change/session revoke; HR seed count beyond ≥1; hosting/backups; BFF contingency; deferred FX.
+**Still [U]:** session TTL; CSRF wire details; cookie attributes; password-change/session revoke; HR seed count beyond ≥1; hosting/backups; BFF contingency; deferred FX.
 
 **Assumptions [A]:** ISO country/currency codes; `CITEXT` email; connect-pg-simple session shape; optional `hire_date`; HTTP 409 codes above; job title as text.
 
