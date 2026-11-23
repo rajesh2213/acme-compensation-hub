@@ -10,11 +10,16 @@
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate deploy",
+    "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "7.10.1",
+    "argon2": "^0.45.2",
     "dotenv": "^18.0.10",
     "express": "^4.21.2",
     "pg": "^8.23.1"
