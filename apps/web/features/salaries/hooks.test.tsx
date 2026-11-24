@@ -2,9 +2,13 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { analyticsKeys } from "@/features/analytics/query-keys";
 import { employeesKeys } from "@/features/employees/query-keys";
 import { useAssignSalary, useReviseSalary } from "./hooks";
 import { salariesKeys } from "./query-keys";
+
+const overviewKey = analyticsKeys.overview({ countryId: "c1" });
+const compensationKey = analyticsKeys.compensation({ status: "ACTIVE" });
 
 const assignSalary = vi.fn();
 const reviseSalary = vi.fn();
@@ -100,7 +104,7 @@ describe("salary mutation invalidation", () => {
     cleanup();
   });
 
-  it("sets current salary and invalidates employee detail after assign", async () => {
+  it("sets current salary and invalidates detail + compensation analytics after assign", async () => {
     assignSalary.mockResolvedValue(salary);
 
     const queryClient = new QueryClient({
@@ -110,6 +114,8 @@ describe("salary mutation invalidation", () => {
       },
     });
     queryClient.setQueryData(employeesKeys.detail("e1"), { id: "e1" });
+    queryClient.setQueryData(overviewKey, { totalEmployees: 1 });
+    queryClient.setQueryData(compensationKey, { byCurrency: [] });
 
     const user = userEvent.setup();
     render(
@@ -134,14 +140,20 @@ describe("salary mutation invalidation", () => {
       expect(
         queryClient.getQueryState(employeesKeys.detail("e1"))?.isInvalidated,
       ).toBe(true);
+      expect(queryClient.getQueryState(compensationKey)?.isInvalidated).toBe(
+        true,
+      );
     });
     expect(
       queryClient.getQueryState(salariesKeys.revisionsForEmployee("e1"))
         ?.isInvalidated ?? true,
     ).toBe(true);
+    expect(queryClient.getQueryState(overviewKey)?.isInvalidated).not.toBe(
+      true,
+    );
   });
 
-  it("updates current salary cache after revise with currency change", async () => {
+  it("updates current salary and invalidates compensation analytics after revise", async () => {
     reviseSalary.mockResolvedValue({
       ...salary,
       amount: "130000.00",
@@ -163,6 +175,8 @@ describe("salary mutation invalidation", () => {
       salariesKeys.revisions("e1", { page: 2, limit: 25 }),
       { revisions: [], page: 2, limit: 25, total: 0, totalPages: 0 },
     );
+    queryClient.setQueryData(overviewKey, { totalEmployees: 1 });
+    queryClient.setQueryData(compensationKey, { byCurrency: [] });
 
     const user = userEvent.setup();
     render(
@@ -190,6 +204,12 @@ describe("salary mutation invalidation", () => {
           salariesKeys.revisions("e1", { page: 2, limit: 25 }),
         )?.isInvalidated,
       ).toBe(true);
+      expect(queryClient.getQueryState(compensationKey)?.isInvalidated).toBe(
+        true,
+      );
     });
+    expect(queryClient.getQueryState(overviewKey)?.isInvalidated).not.toBe(
+      true,
+    );
   });
 });

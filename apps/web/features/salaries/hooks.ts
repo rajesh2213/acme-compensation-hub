@@ -6,6 +6,7 @@ import {
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
+import { invalidateAnalyticsAfterSalaryMutation } from "@/features/analytics/invalidate";
 import { employeesKeys } from "@/features/employees/query-keys";
 import {
   assignSalary,
@@ -36,6 +37,7 @@ async function invalidateSalaryQueries(
     queryClient.invalidateQueries({
       queryKey: employeesKeys.detail(employeeId),
     }),
+    invalidateAnalyticsAfterSalaryMutation(queryClient),
   ]);
 }
 

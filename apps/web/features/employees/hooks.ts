@@ -6,6 +6,7 @@ import {
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
+import { invalidateAnalyticsAfterEmployeeMutation } from "@/features/analytics/invalidate";
 import {
   createEmployee,
   getEmployee,
@@ -66,6 +67,7 @@ export function useCreateEmployee() {
     mutationFn: (body: CreateEmployeeInput) => createEmployee(body),
     onSuccess: async (employee) => {
       await queryClient.invalidateQueries({ queryKey: employeesKeys.lists() });
+      await invalidateAnalyticsAfterEmployeeMutation(queryClient);
       queryClient.setQueryData(employeesKeys.detail(employee.id), employee);
     },
   });
@@ -77,6 +79,7 @@ export function useUpdateEmployee(id: string) {
     mutationFn: (body: UpdateEmployeeInput) => updateEmployee(id, body),
     onSuccess: async (employee) => {
       await queryClient.invalidateQueries({ queryKey: employeesKeys.lists() });
+      await invalidateAnalyticsAfterEmployeeMutation(queryClient);
       queryClient.setQueryData(employeesKeys.detail(employee.id), employee);
     },
   });

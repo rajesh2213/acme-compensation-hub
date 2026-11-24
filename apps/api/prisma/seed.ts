@@ -12,6 +12,7 @@ import {
   LAST_NAMES,
 } from "./seed/data.js";
 import { annualAmountCents, centsToDecimal, raiseCents } from "./seed/money.js";
+import { assertSeedAllowedInEnvironment } from "./seed/guard.js";
 import { resetSeedData } from "./seed/reset.js";
 
 function requireSeedEnv(name: string): string {
@@ -328,6 +329,8 @@ async function printSummary() {
 }
 
 async function main() {
+  assertSeedAllowedInEnvironment();
+
   if (process.env.SEED_RESET?.trim()) {
     await resetSeedData(prisma);
   }
