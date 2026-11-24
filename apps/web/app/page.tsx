@@ -1,12 +1,5 @@
-export default function Home() {
-  return (
-    <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">
-        ACME Compensation Hub
-      </h1>
-      <p className="mt-3 max-w-md text-center text-base text-zinc-600">
-        Employee salary management for ACME HR.
-      </p>
-    </main>
-  );
+import { redirect } from "next/navigation";
+
+export default function HomePage() {
+  redirect("/overview");
 }
