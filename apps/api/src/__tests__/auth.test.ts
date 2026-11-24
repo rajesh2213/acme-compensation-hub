@@ -185,6 +185,17 @@ describe("auth + session + CSRF", () => {
     expect(logout.status).toBe(200);
     expect(logout.body.data).toEqual({ loggedOut: true });
 
+    const setCookie = logout.headers["set-cookie"];
+    const clearHeader = Array.isArray(setCookie)
+      ? setCookie.find((value) => value.startsWith("acme.sid="))
+      : setCookie;
+    expect(clearHeader).toBeTruthy();
+    expect(clearHeader!).toMatch(/Path=\//i);
+    expect(clearHeader!).toMatch(/HttpOnly/i);
+    expect(clearHeader!).toMatch(/SameSite=Lax/i);
+    // Dev/test env uses COOKIE_SECURE=false by default — Secure must be absent.
+    expect(clearHeader!.toLowerCase()).not.toMatch(/;\s*secure/i);
+
     const me = await agent.get("/api/v1/auth/me");
     expect(me.status).toBe(401);
   });

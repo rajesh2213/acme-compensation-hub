@@ -1,49 +1,11 @@
 /**
- * Display helpers only. Monetary values stay decimal strings in the data layer.
- * Integer grouping uses BigInt + Intl — never Number/parseFloat for money.
+ * Display helpers for analytics. Monetary formatting is shared via lib/format-money.
  */
+
+export { formatMoneyDisplay } from "@/lib/format-money";
 
 export function formatEmployeeCount(count: number): string {
   return new Intl.NumberFormat(undefined).format(count);
-}
-
-/**
- * Locale decimal separator for display assembly.
- * Uses a non-monetary probe via formatToParts; never converts the money amount.
- */
-function localeDecimalSeparator(locale?: string): string {
-  const parts = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).formatToParts(1.1);
-  return parts.find((part) => part.type === "decimal")?.value ?? ".";
-}
-
-/**
- * Formats a decimal money string for display.
- * Splits integer/fractional parts as strings; groups the integer with BigInt.
- * Fractional digits are preserved exactly (padded to two) and joined with the
- * locale-specific decimal separator from formatToParts.
- */
-export function formatMoneyDisplay(
-  amount: string,
-  currency: string,
-  locale?: string,
-): string {
-  const [wholeRaw = "0", fracRaw = ""] = amount.split(".");
-  const wholeDigits = (wholeRaw.replace(/^0+(?=\d)/, "") || "0").replace(
-    /[^\d]/g,
-    "",
-  );
-  const frac = `${fracRaw}00`.slice(0, 2).replace(/[^\d]/g, "").padEnd(2, "0");
-
-  const groupedWhole = new Intl.NumberFormat(locale, {
-    maximumFractionDigits: 0,
-    useGrouping: true,
-  }).format(BigInt(wholeDigits || "0"));
-
-  const decimal = localeDecimalSeparator(locale);
-  return `${groupedWhole}${decimal}${frac} ${currency}`;
 }
 
 export function formatStatusLabel(

@@ -1,3 +1,4 @@
+import { formatMoneyDisplay } from "@/lib/format-money";
 import type { EmployeeDetail, EmploymentStatus, SalaryDto } from "./types";
 
 export function fullName(employee: {
@@ -22,14 +23,7 @@ export function formatStatus(status: EmploymentStatus): string {
 
 export function formatSalary(salary: SalaryDto | null | undefined): string {
   if (!salary) return "—";
-  const amount = Number(salary.amount);
-  const formatted = Number.isFinite(amount)
-    ? new Intl.NumberFormat(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount)
-    : salary.amount;
-  return `${formatted} ${salary.currency}`;
+  return formatMoneyDisplay(salary.amount, salary.currency);
 }
 
 export function formatHireDate(value: string | null | undefined): string {

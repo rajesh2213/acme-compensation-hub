@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "./auth-provider";
+import { resolvePostLoginPath } from "./safe-next-path";
 
 function SessionStatusMessage({ children }: { children: ReactNode }) {
   return (
@@ -45,14 +46,21 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const { status, error, refreshSession } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      const next = pathname && pathname !== "/" ? pathname : "/overview";
+      const search = searchParams.toString();
+      const next =
+        pathname && pathname !== "/"
+          ? search
+            ? `${pathname}?${search}`
+            : pathname
+          : "/overview";
       router.replace(`/login?next=${encodeURIComponent(next)}`);
     }
-  }, [status, router, pathname]);
+  }, [status, router, pathname, searchParams]);
 
   async function onRetry() {
     setRetrying(true);
@@ -90,13 +98,15 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
   const { status, error, refreshSession } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/overview");
+      const destination = resolvePostLoginPath(searchParams.get("next"));
+      router.replace(destination);
     }
-  }, [status, router]);
+  }, [status, router, searchParams]);
 
   async function onRetry() {
     setRetrying(true);

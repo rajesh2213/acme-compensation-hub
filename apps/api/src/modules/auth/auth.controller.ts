@@ -1,6 +1,9 @@
 import type { Request, Response } from "express";
 import { ensureCsrfToken } from "../../middleware/csrf.js";
-import { SESSION_COOKIE_NAME } from "../../middleware/session.js";
+import {
+  getSessionCookieClearOptions,
+  SESSION_COOKIE_NAME,
+} from "../../middleware/session.js";
 import { sendSuccess } from "../../lib/response.js";
 import { AppError } from "../../lib/errors.js";
 import { authenticateUser } from "./auth.service.js";
@@ -46,10 +49,7 @@ export async function logout(req: Request, res: Response): Promise<void> {
     });
   });
 
-  res.clearCookie(SESSION_COOKIE_NAME, {
-    path: "/",
-    httpOnly: true,
-  });
+  res.clearCookie(SESSION_COOKIE_NAME, getSessionCookieClearOptions());
 
   sendSuccess(res, { loggedOut: true });
 }

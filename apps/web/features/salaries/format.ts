@@ -1,26 +1,16 @@
+import { formatMoneyDisplay } from "@/lib/format-money";
 import type { CurrentSalary, SalaryRevision } from "./types";
 
 /**
  * Formats a decimal money string for display grouping only.
- * Does not convert currencies or use money values in business arithmetic.
+ * Delegates to the shared BigInt/locale formatter — no Number coercion.
  */
-export function formatMoneyAmount(amount: string, currency: string): string {
-  const [wholeRaw, fracRaw = ""] = amount.split(".");
-  const whole = wholeRaw || "0";
-  const frac = (fracRaw + "00").slice(0, 2);
-
-  try {
-    const asNumber = Number(`${whole}.${frac}`);
-    if (Number.isFinite(asNumber)) {
-      return `${new Intl.NumberFormat(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(asNumber)} ${currency}`;
-    }
-  } catch {
-    // fall through
-  }
-  return `${whole}.${frac} ${currency}`;
+export function formatMoneyAmount(
+  amount: string,
+  currency: string,
+  locale?: string,
+): string {
+  return formatMoneyDisplay(amount, currency, locale);
 }
 
 export function formatSalaryHeadline(salary: CurrentSalary): string {

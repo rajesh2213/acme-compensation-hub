@@ -6,10 +6,15 @@ import { RequireAuth, RedirectIfAuthenticated } from "./require-auth";
 const replace = vi.fn();
 const refreshSession = vi.fn();
 const useAuth = vi.fn();
+const navState = {
+  pathname: "/employees",
+  search: "",
+};
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
-  usePathname: () => "/employees",
+  usePathname: () => navState.pathname,
+  useSearchParams: () => new URLSearchParams(navState.search),
 }));
 
 vi.mock("./auth-provider", () => ({
@@ -20,6 +25,8 @@ describe("route guards", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     refreshSession.mockResolvedValue(undefined);
+    navState.pathname = "/employees";
+    navState.search = "";
   });
 
   afterEach(() => {
@@ -59,7 +66,30 @@ describe("route guards", () => {
 
     await waitFor(() => {
       expect(replace).toHaveBeenCalledWith(
-        expect.stringContaining("/login?next="),
+        `/login?next=${encodeURIComponent("/employees")}`,
+      );
+    });
+    expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
+  });
+
+  it("preserves query parameters in the login next redirect", async () => {
+    navState.pathname = "/employees";
+    navState.search = "countryId=IN&page=3";
+    useAuth.mockReturnValue({
+      status: "unauthenticated",
+      error: null,
+      refreshSession,
+    });
+
+    render(
+      <RequireAuth>
+        <p>Protected content</p>
+      </RequireAuth>,
+    );
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith(
+        `/login?next=${encodeURIComponent("/employees?countryId=IN&page=3")}`,
       );
     });
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
@@ -119,6 +149,7 @@ describe("route guards", () => {
   });
 
   it("redirects authenticated users away from login", async () => {
+    navState.search = "next=%2Femployees%3Fpage%3D2";
     useAuth.mockReturnValue({
       status: "authenticated",
       error: null,
@@ -132,7 +163,7 @@ describe("route guards", () => {
     );
 
     await waitFor(() => {
-      expect(replace).toHaveBeenCalledWith("/overview");
+      expect(replace).toHaveBeenCalledWith("/employees?page=2");
     });
     expect(screen.queryByText("Login form")).not.toBeInTheDocument();
   });

@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ApiError } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "./auth-provider";
+import { resolvePostLoginPath } from "./safe-next-path";
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +24,8 @@ export function LoginForm() {
     setSubmitting(true);
     try {
       await login(email.trim(), password);
-      router.replace("/overview");
+      const destination = resolvePostLoginPath(searchParams.get("next"));
+      router.replace(destination);
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.code === "INVALID_CREDENTIALS") {
