@@ -12,6 +12,9 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     include: ["**/*.{test,spec}.{ts,tsx}"],
     exclude: ["node_modules", ".next"],
+    pool: "forks",
+    maxWorkers: 1,
+    fileParallelism: false,
   },
   resolve: {
     alias: {

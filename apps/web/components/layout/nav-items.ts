@@ -29,6 +29,10 @@ export const APP_NAV: AppNavItem[] = [
 ];
 
 export function titleForPath(pathname: string): string {
+  if (pathname === "/employees/new") return "New employee";
+  if (/^\/employees\/[^/]+\/edit$/.test(pathname)) return "Edit employee";
+  if (/^\/employees\/[^/]+$/.test(pathname)) return "Employee";
+
   const match = APP_NAV.find(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
   );

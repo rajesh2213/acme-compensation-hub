@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { EmployeeDirectory } from "@/features/employees/components/employee-directory";
+import { QueryLoading } from "@/features/employees/components/query-state";
 
 export const metadata: Metadata = {
   title: "Employees",
@@ -7,9 +9,8 @@ export const metadata: Metadata = {
 
 export default function EmployeesPage() {
   return (
-    <PlaceholderPage
-      title="Employees"
-      description="Search, filter, and manage employee records in a later milestone."
-    />
+    <Suspense fallback={<QueryLoading label="Loading employees…" />}>
+      <EmployeeDirectory />
+    </Suspense>
   );
 }
