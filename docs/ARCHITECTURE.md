@@ -198,13 +198,21 @@ No cache tier initially **[C]**.
               └─ /api  → Express → PostgreSQL
 ```
 
+Express sets `trust proxy = 1` so `req.ip` (login rate limiting) and Secure cookie decisions reflect the client behind that single trusted hop. Do not place untrusted intermediaries in front of the API without adjusting this setting.
+
+**Deployment requirements for trusted client IP [C]:**
+- The API must not be reachable by untrusted clients that bypass the reverse proxy; otherwise callers can spoof `X-Forwarded-For` / related headers and inflate or evade IP-based controls such as login rate limiting.
+- The reverse proxy must **overwrite** (set) forwarding headers from the real connecting client, not append or blindly forward client-supplied values.
+- This is an infrastructure/network control, not an application-layer substitute for those controls.
+
 Hosting provider **[U]**. Deployed app + demo required by assessment **[C]**.
 
 | Env (illustrative) **[A]** | Used by |
 |----------------------------|---------|
 | `DATABASE_URL` | API, Prisma, sessions |
 | `SESSION_SECRET` | API |
-| `NODE_ENV` | Secure cookies, error detail |
+| `NODE_ENV` | Secure cookies (required in production), error detail |
+| `COOKIE_SECURE` | Dev override only; `false` rejected in production |
 | `CORS_ORIGIN` / `WEB_ORIGIN` | Only if cross-origin |
 | `NEXT_PUBLIC_API_BASE_URL` | Web (relative if proxied) |
 

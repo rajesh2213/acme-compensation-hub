@@ -75,7 +75,6 @@ describe("API foundation", () => {
       configure: (expressApp) => {
         expressApp.post(
           "/api/v1/__test/validate",
-          express.json(),
           validate({
             body: z.object({
               email: z.string().email(),
@@ -88,8 +87,14 @@ describe("API foundation", () => {
       },
     });
 
-    const res = await request(app)
+    const agent = request.agent(app);
+    const csrfRes = await agent.get("/api/v1/auth/csrf");
+    const csrfToken = csrfRes.body.data.csrfToken as string;
+
+    const res = await agent
       .post("/api/v1/__test/validate")
+      .set("Origin", "http://localhost:3000")
+      .set("X-CSRF-Token", csrfToken)
       .send({ email: "not-an-email" });
 
     expect(res.status).toBe(400);
