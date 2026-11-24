@@ -5,13 +5,9 @@ import Link from "next/link";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { ApiError } from "@/lib/api-client";
-import {
-  formatHireDate,
-  fullName,
-  salarySummary,
-} from "../format";
+import { SalarySection } from "@/features/salaries/components/salary-section";
+import { formatHireDate, fullName } from "../format";
 import { useEmployee } from "../hooks";
 import { QueryError, QueryLoading } from "./query-state";
 import { StatusBadge } from "./status-badge";
@@ -90,15 +86,10 @@ export function EmployeeDetailView({ employeeId }: { employeeId: string }) {
             <DetailItem label="Department" value={employee.department.name} />
             <DetailItem label="Country" value={employee.country.name} />
           </dl>
-          <Separator />
-          <div className="space-y-1">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Current salary
-            </p>
-            <p className="text-sm text-foreground">{salarySummary(employee)}</p>
-          </div>
         </CardContent>
       </Card>
+
+      <SalarySection employeeId={employee.id} />
     </div>
   );
 }

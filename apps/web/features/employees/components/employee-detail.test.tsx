@@ -30,6 +30,19 @@ vi.mock("../api", () => ({
   listDepartments: vi.fn(),
 }));
 
+vi.mock("@/features/salaries/api", () => ({
+  getCurrentSalary: vi.fn().mockResolvedValue(null),
+  listSalaryRevisions: vi.fn().mockResolvedValue({
+    revisions: [],
+    page: 1,
+    limit: 25,
+    total: 0,
+    totalPages: 0,
+  }),
+  assignSalary: vi.fn(),
+  reviseSalary: vi.fn(),
+}));
+
 const employee = {
   id: "e1",
   employeeNumber: "E-001",
@@ -73,7 +86,7 @@ describe("EmployeeDetailView", () => {
     cleanup();
   });
 
-  it("renders employee detail and salary summary", async () => {
+  it("renders employee detail and compensation section", async () => {
     getEmployee.mockResolvedValue(employee);
     renderDetail();
 
@@ -81,7 +94,7 @@ describe("EmployeeDetailView", () => {
       expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
     });
     expect(screen.getByText("Engineering")).toBeInTheDocument();
-    expect(screen.getByText(/USD · effective 2024-01-01/)).toBeInTheDocument();
+    expect(screen.getByText("Compensation")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Edit/i })).toHaveAttribute(
       "href",
       "/employees/e1/edit",
