@@ -2,6 +2,7 @@ import { Router, type Router as ExpressRouter } from "express";
 import { asyncHandler } from "../../lib/async-handler.js";
 import { requireAuth } from "../../middleware/require-auth.js";
 import { validate } from "../../middleware/validate.js";
+import { salariesRouter } from "../salaries/salaries.routes.js";
 import {
   create,
   getById,
@@ -24,6 +25,8 @@ employeesRouter.get(
   validate({ query: listEmployeesQuerySchema }),
   asyncHandler(list),
 );
+
+employeesRouter.use("/:employeeId/salary", salariesRouter);
 
 employeesRouter.get(
   "/:id",
