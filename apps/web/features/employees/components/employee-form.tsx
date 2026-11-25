@@ -121,21 +121,40 @@ export function EmployeeForm({
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit(submit)} noValidate>
+      <p className="text-xs text-muted-foreground">
+        Required fields are marked with{" "}
+        <span className="text-destructive" aria-hidden="true">
+          *
+        </span>
+        .
+      </p>
       <div className="grid gap-4 md:grid-cols-2">
         <Field
           id="employeeNumber"
           label="Employee number"
+          required
           error={errors.employeeNumber?.message}
         >
           <Input
             id="employeeNumber"
             autoComplete="off"
             disabled={busy}
+            aria-required="true"
             {...register("employeeNumber")}
           />
         </Field>
-        <Field id="status" label="Employment status" error={errors.status?.message}>
-          <Select id="status" disabled={busy} {...register("status")}>
+        <Field
+          id="status"
+          label="Employment status"
+          required
+          error={errors.status?.message}
+        >
+          <Select
+            id="status"
+            disabled={busy}
+            aria-required="true"
+            {...register("status")}
+          >
             {EMPLOYMENT_STATUSES.map((status) => (
               <option key={status} value={status}>
                 {formatStatus(status)}
@@ -143,26 +162,58 @@ export function EmployeeForm({
             ))}
           </Select>
         </Field>
-        <Field id="firstName" label="First name" error={errors.firstName?.message}>
-          <Input id="firstName" disabled={busy} {...register("firstName")} />
+        <Field
+          id="firstName"
+          label="First name"
+          required
+          error={errors.firstName?.message}
+        >
+          <Input
+            id="firstName"
+            disabled={busy}
+            aria-required="true"
+            {...register("firstName")}
+          />
         </Field>
-        <Field id="lastName" label="Last name" error={errors.lastName?.message}>
-          <Input id="lastName" disabled={busy} {...register("lastName")} />
+        <Field
+          id="lastName"
+          label="Last name"
+          required
+          error={errors.lastName?.message}
+        >
+          <Input
+            id="lastName"
+            disabled={busy}
+            aria-required="true"
+            {...register("lastName")}
+          />
         </Field>
         <Field
           id="jobTitle"
           label="Job title"
+          required
           error={errors.jobTitle?.message}
           className="md:col-span-2"
         >
-          <Input id="jobTitle" disabled={busy} {...register("jobTitle")} />
+          <Input
+            id="jobTitle"
+            disabled={busy}
+            aria-required="true"
+            {...register("jobTitle")}
+          />
         </Field>
         <Field
           id="departmentId"
           label="Department"
+          required
           error={errors.departmentId?.message}
         >
-          <Select id="departmentId" disabled={busy} {...register("departmentId")}>
+          <Select
+            id="departmentId"
+            disabled={busy}
+            aria-required="true"
+            {...register("departmentId")}
+          >
             <option value="">Select department</option>
             {departments.map((department) => (
               <option key={department.id} value={department.id}>
@@ -171,8 +222,18 @@ export function EmployeeForm({
             ))}
           </Select>
         </Field>
-        <Field id="countryId" label="Country" error={errors.countryId?.message}>
-          <Select id="countryId" disabled={busy} {...register("countryId")}>
+        <Field
+          id="countryId"
+          label="Country"
+          required
+          error={errors.countryId?.message}
+        >
+          <Select
+            id="countryId"
+            disabled={busy}
+            aria-required="true"
+            {...register("countryId")}
+          >
             <option value="">Select country</option>
             {countries.map((country) => (
               <option key={country.id} value={country.id}>
@@ -221,19 +282,28 @@ export function EmployeeForm({
 function Field({
   id,
   label,
+  required = false,
   error,
   className,
   children,
 }: {
   id: string;
   label: string;
+  required?: boolean;
   error?: string;
   className?: string;
   children: ReactNode;
 }) {
   return (
     <div className={`space-y-2 ${className ?? ""}`}>
-      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center gap-0.5">
+        <Label htmlFor={id}>{label}</Label>
+        {required ? (
+          <span className="text-destructive" aria-hidden="true">
+            *
+          </span>
+        ) : null}
+      </div>
       {children}
       {error ? (
         <p className="text-xs text-destructive" role="alert">

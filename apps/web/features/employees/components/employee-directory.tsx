@@ -281,7 +281,7 @@ export function EmployeeDirectory() {
             </Select>
             <Select
               aria-label="Sort order"
-              className="w-28"
+              className="w-36"
               value={queryParams.sortOrder}
               onChange={(event) =>
                 patchParams({

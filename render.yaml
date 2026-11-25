@@ -1,0 +1,29 @@
+# ACME Compensation Hub — Render Free Web Service (Express API only).
+# Database: Neon Free (configure DATABASE_URL manually — do not use Render Postgres here).
+# Frontend: Vercel Hobby (separate project).
+#
+# Plan is intentionally `free`. Do not change to paid plans for the ₹0 demo budget.
+# Secrets use sync: false — set them in the Render dashboard; never commit real values.
+
+services:
+  - type: web
+    name: acme-compensation-hub-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter api build
+    startCommand: pnpm --filter api start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: SESSION_TTL
+        value: "28800"
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: TRUSTED_ORIGINS
+        sync: false

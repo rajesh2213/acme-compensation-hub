@@ -34,6 +34,17 @@ describe("EmployeeForm", () => {
       />,
     );
 
+    expect(
+      screen.getByText(/Required fields are marked with/),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Employee number")).toHaveAttribute(
+      "aria-required",
+      "true",
+    );
+    expect(screen.getByLabelText("Hire date")).not.toHaveAttribute(
+      "aria-required",
+    );
+
     await user.click(screen.getByRole("button", { name: "Create employee" }));
 
     await waitFor(() => {

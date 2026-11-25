@@ -13,7 +13,8 @@
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "bootstrap:hr": "tsx scripts/bootstrap-hr-user.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

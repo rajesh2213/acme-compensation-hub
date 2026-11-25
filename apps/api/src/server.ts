@@ -5,7 +5,8 @@ export function startServer(): void {
   const env = loadEnv();
   const app = createApp();
 
-  app.listen(env.port, () => {
-    console.log(`API listening on http://localhost:${env.port}`);
+  // Bind all interfaces for PaaS (Render Free, etc.). PORT comes from the platform.
+  app.listen(env.port, "0.0.0.0", () => {
+    console.log(`API listening on 0.0.0.0:${env.port}`);
   });
 }

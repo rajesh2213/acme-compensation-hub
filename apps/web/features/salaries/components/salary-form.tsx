@@ -136,19 +136,42 @@ export function SalaryForm({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit(submit)} noValidate>
+      <p className="text-xs text-muted-foreground">
+        Required fields are marked with{" "}
+        <span className="text-destructive" aria-hidden="true">
+          *
+        </span>
+        .
+      </p>
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field id="amount" label="Annual amount" error={errors.amount?.message}>
+        <Field
+          id="amount"
+          label="Annual amount"
+          required
+          error={errors.amount?.message}
+        >
           <Input
             id="amount"
             inputMode="decimal"
             autoComplete="off"
             placeholder="120000.00"
             disabled={busy}
+            aria-required="true"
             {...register("amount")}
           />
         </Field>
-        <Field id="currency" label="Currency" error={errors.currency?.message}>
-          <Select id="currency" disabled={busy} {...register("currency")}>
+        <Field
+          id="currency"
+          label="Currency"
+          required
+          error={errors.currency?.message}
+        >
+          <Select
+            id="currency"
+            disabled={busy}
+            aria-required="true"
+            {...register("currency")}
+          >
             <option value="">Select currency</option>
             {options.map((code) => (
               <option key={code} value={code}>
@@ -160,12 +183,14 @@ export function SalaryForm({
         <Field
           id="effectiveDate"
           label="Effective date"
+          required
           error={errors.effectiveDate?.message}
         >
           <Input
             id="effectiveDate"
             type="date"
             disabled={busy}
+            aria-required="true"
             {...register("effectiveDate")}
           />
         </Field>
@@ -203,17 +228,26 @@ export function SalaryForm({
 function Field({
   id,
   label,
+  required = false,
   error,
   children,
 }: {
   id: string;
   label: string;
+  required?: boolean;
   error?: string;
   children: ReactNode;
 }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center gap-0.5">
+        <Label htmlFor={id}>{label}</Label>
+        {required ? (
+          <span className="text-destructive" aria-hidden="true">
+            *
+          </span>
+        ) : null}
+      </div>
       {children}
       {error ? (
         <p className="text-xs text-destructive" role="alert">

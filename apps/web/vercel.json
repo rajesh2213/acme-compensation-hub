@@ -1,0 +1,38 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "cd ../.. && corepack enable && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && pnpm --filter web build",
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "x-vercel-enable-rewrite-caching", "value": "0" },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/health",
+      "headers": [
+        { "key": "x-vercel-enable-rewrite-caching", "value": "0" },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/health/ready",
+      "headers": [
+        { "key": "x-vercel-enable-rewrite-caching", "value": "0" },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
