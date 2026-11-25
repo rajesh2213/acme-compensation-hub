@@ -10,6 +10,6 @@
     "typecheck": "pnpm -r run typecheck"
   },
   "engines": {
-    "node": ">=20.9.0"
+    "node": "22.x"
   }
 }

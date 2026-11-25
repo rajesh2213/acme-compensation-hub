@@ -11,7 +11,7 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter api build
+    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm --filter api build
     startCommand: pnpm --filter api start
     healthCheckPath: /health
     envVars:
