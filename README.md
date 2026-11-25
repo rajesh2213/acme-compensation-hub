@@ -287,14 +287,22 @@ pnpm --filter api prisma:studio
 
 Production database changes should be applied through Prisma migrations. Do not use `prisma db push` against the production database.
 
-## Deployment Status
+## Deployment
 
-The application is being prepared for a free-tier deployment.
+| Layer | Host |
+| ----- | ---- |
+| Frontend | Vercel Hobby |
+| API | Render Free |
+| Database | Neon Free Postgres |
 
-The intended hosting arrangement is:
 
-- Frontend: Vercel
-- Backend: Render
-- Database: Managed PostgreSQL
+### Cold starts
 
-The deployment has not yet been completed.
+After idle time, the first request can take **~30–60 seconds**
+
+| Layer | Idle behavior |
+| ----- | ------------- |
+| Render Free API | Sleeps after ~**15 minutes**; cold start often ~**1 minute** |
+| Neon Free | Scales to zero after ~**5 minutes**; first DB query adds wake latency |
+
+That delay can show up on **login** as well as Overview/Employees, because auth bootstraps via `/api/v1/auth/me` through the same API.
