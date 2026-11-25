@@ -9,6 +9,12 @@ import { salariesKeys } from "./query-keys";
 
 const overviewKey = analyticsKeys.overview({ countryId: "c1" });
 const compensationKey = analyticsKeys.compensation({ status: "ACTIVE" });
+const listKey = employeesKeys.list({
+  page: 1,
+  limit: 25,
+  sortBy: "employeeNumber",
+  sortOrder: "asc",
+});
 
 const assignSalary = vi.fn();
 const reviseSalary = vi.fn();
@@ -104,7 +110,7 @@ describe("salary mutation invalidation", () => {
     cleanup();
   });
 
-  it("sets current salary and invalidates detail + compensation analytics after assign", async () => {
+  it("sets current salary and invalidates detail + lists + compensation analytics after assign", async () => {
     assignSalary.mockResolvedValue(salary);
 
     const queryClient = new QueryClient({
@@ -114,6 +120,13 @@ describe("salary mutation invalidation", () => {
       },
     });
     queryClient.setQueryData(employeesKeys.detail("e1"), { id: "e1" });
+    queryClient.setQueryData(listKey, {
+      employees: [],
+      page: 1,
+      limit: 25,
+      total: 0,
+      totalPages: 0,
+    });
     queryClient.setQueryData(overviewKey, { totalEmployees: 1 });
     queryClient.setQueryData(compensationKey, { byCurrency: [] });
 
@@ -140,6 +153,7 @@ describe("salary mutation invalidation", () => {
       expect(
         queryClient.getQueryState(employeesKeys.detail("e1"))?.isInvalidated,
       ).toBe(true);
+      expect(queryClient.getQueryState(listKey)?.isInvalidated).toBe(true);
       expect(queryClient.getQueryState(compensationKey)?.isInvalidated).toBe(
         true,
       );

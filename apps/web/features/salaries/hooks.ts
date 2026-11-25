@@ -37,6 +37,9 @@ async function invalidateSalaryQueries(
     queryClient.invalidateQueries({
       queryKey: employeesKeys.detail(employeeId),
     }),
+    queryClient.invalidateQueries({
+      queryKey: employeesKeys.lists(),
+    }),
     invalidateAnalyticsAfterSalaryMutation(queryClient),
   ]);
 }

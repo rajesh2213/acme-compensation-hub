@@ -35,11 +35,10 @@ export type EmployeeListItemDto = {
   updatedAt: string;
   department: RefDto;
   country: RefDto;
-};
-
-export type EmployeeDetailDto = EmployeeListItemDto & {
   salary: SalaryDto | null;
 };
+
+export type EmployeeDetailDto = EmployeeListItemDto;
 
 export type EmployeeListResult = {
   employees: EmployeeListItemDto[];

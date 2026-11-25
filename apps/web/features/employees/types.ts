@@ -37,11 +37,10 @@ export type EmployeeListItem = {
   updatedAt: string;
   department: RefDto;
   country: RefDto;
-};
-
-export type EmployeeDetail = EmployeeListItem & {
   salary: SalaryDto | null;
 };
+
+export type EmployeeDetail = EmployeeListItem;
 
 export type EmployeeListResult = {
   employees: EmployeeListItem[];

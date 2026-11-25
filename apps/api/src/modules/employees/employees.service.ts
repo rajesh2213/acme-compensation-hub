@@ -35,24 +35,30 @@ const refSelect = {
   name: true,
 } as const;
 
+const salarySelect = {
+  id: true,
+  amount: true,
+  currency: true,
+  effectiveDate: true,
+  version: true,
+} as const;
+
 const listSelect = {
   ...employeeCoreSelect,
   department: { select: refSelect },
   country: { select: refSelect },
+  salary: { select: salarySelect },
 } as const;
 
-const detailSelect = {
-  ...listSelect,
-  salary: {
-    select: {
-      id: true,
-      amount: true,
-      currency: true,
-      effectiveDate: true,
-      version: true,
-    },
-  },
-} as const;
+const detailSelect = listSelect;
+
+type SalaryRow = {
+  id: string;
+  amount: Prisma.Decimal;
+  currency: string;
+  effectiveDate: Date;
+  version: number;
+};
 
 type ListRow = {
   id: string;
@@ -68,17 +74,10 @@ type ListRow = {
   updatedAt: Date;
   department: RefDto;
   country: RefDto;
+  salary: SalaryRow | null;
 };
 
-type DetailRow = ListRow & {
-  salary: {
-    id: string;
-    amount: Prisma.Decimal;
-    currency: string;
-    effectiveDate: Date;
-    version: number;
-  } | null;
-};
+type DetailRow = ListRow;
 
 function formatDateOnly(value: Date): string {
   return value.toISOString().slice(0, 10);
@@ -88,7 +87,7 @@ function toRef(ref: RefDto): RefDto {
   return { id: ref.id, code: ref.code, name: ref.name };
 }
 
-function toSalaryDto(salary: NonNullable<DetailRow["salary"]>): SalaryDto {
+function toSalaryDto(salary: SalaryRow): SalaryDto {
   return {
     id: salary.id,
     amount: salary.amount.toFixed(2),
@@ -113,14 +112,12 @@ function toListItem(row: ListRow): EmployeeListItemDto {
     updatedAt: row.updatedAt.toISOString(),
     department: toRef(row.department),
     country: toRef(row.country),
+    salary: row.salary ? toSalaryDto(row.salary) : null,
   };
 }
 
 function toDetail(row: DetailRow): EmployeeDetailDto {
-  return {
-    ...toListItem(row),
-    salary: row.salary ? toSalaryDto(row.salary) : null,
-  };
+  return toListItem(row);
 }
 
 function buildListWhere(query: ListEmployeesQuery): Prisma.EmployeeWhereInput {

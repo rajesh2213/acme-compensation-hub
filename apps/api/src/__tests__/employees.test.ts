@@ -198,7 +198,30 @@ describe("employees API", () => {
     expect(res.body.data.limit).toBe(2);
     expect(res.body.data.total).toBe(6);
     expect(res.body.data.totalPages).toBe(3);
-    expect(res.body.data.employees[0]).not.toHaveProperty("salary");
+    expect(res.body.data.employees[0]).toHaveProperty("salary");
+  });
+
+  it("embeds current salary on list items", async () => {
+    const agent = await loginAgent();
+    const withSalary = await agent
+      .get("/api/v1/employees")
+      .query({ search: `${PREFIX}-001` });
+    expect(withSalary.status).toBe(200);
+    expect(withSalary.body.data.employees).toHaveLength(1);
+    expect(withSalary.body.data.employees[0].salary).toMatchObject({
+      id: salaryId,
+      amount: "95000.00",
+      currency: "USD",
+      effectiveDate: "2024-01-01",
+      version: 1,
+    });
+
+    const withoutSalary = await agent
+      .get("/api/v1/employees")
+      .query({ search: `${PREFIX}-002` });
+    expect(withoutSalary.status).toBe(200);
+    expect(withoutSalary.body.data.employees).toHaveLength(1);
+    expect(withoutSalary.body.data.employees[0].salary).toBeNull();
   });
 
   it("searches by employee number and name", async () => {

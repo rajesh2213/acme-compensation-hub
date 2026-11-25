@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api-client";
+import { formatSalary } from "../format";
 import { EmployeeDirectory } from "./employee-directory";
 
 const replace = vi.fn();
@@ -54,6 +55,13 @@ const employee = {
   updatedAt: "2020-01-01T00:00:00.000Z",
   department: { id: "d1", code: "ENG", name: "Engineering" },
   country: { id: "c1", code: "US", name: "United States" },
+  salary: {
+    id: "s1",
+    amount: "126000.00",
+    currency: "AUD",
+    effectiveDate: "2026-11-25",
+    version: 2,
+  },
 };
 
 function renderDirectory() {
@@ -106,6 +114,26 @@ describe("EmployeeDirectory", () => {
     });
     expect(screen.getByText("E-001")).toBeInTheDocument();
     expect(screen.getByText("1 employee")).toBeInTheDocument();
+    expect(
+      screen.getByText(formatSalary(employee.salary)),
+    ).toBeInTheDocument();
+  });
+
+  it("shows em dash when list salary is missing", async () => {
+    listEmployees.mockResolvedValue({
+      employees: [{ ...employee, salary: null }],
+      page: 1,
+      limit: 25,
+      total: 1,
+      totalPages: 1,
+    });
+
+    renderDirectory();
+
+    await waitFor(() => {
+      expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+    });
+    expect(screen.getByRole("cell", { name: "—" })).toBeInTheDocument();
   });
 
   it("shows empty state", async () => {

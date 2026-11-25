@@ -17,7 +17,7 @@ import { Select } from "@/components/ui/select";
 import { ApiError } from "@/lib/api-client";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { cn } from "@/lib/utils";
-import { formatStatus, fullName } from "../format";
+import { formatSalary, formatStatus, fullName } from "../format";
 import { useCountries, useDepartments, useEmployeeList } from "../hooks";
 import {
   EMPLOYEE_SORT_FIELDS,
@@ -380,7 +380,9 @@ export function EmployeeDirectory() {
                   <td className="px-3 py-2.5">
                     <StatusBadge status={employee.status} />
                   </td>
-                  <td className="px-3 py-2.5 text-muted-foreground">—</td>
+                  <td className="px-3 py-2.5 font-mono text-xs tabular-nums text-muted-foreground">
+                    {formatSalary(employee.salary)}
+                  </td>
                 </tr>
               ))}
             </tbody>
